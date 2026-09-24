@@ -78,21 +78,68 @@ def depthFirstSearch(problem: SearchProblem):
 
     Your search algorithm needs to return a list of actions that reaches the
     goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Stack
+    
+    # Initialize the fringe as a Stack (LIFO)
+    fringe = Stack()
+    # Push the starting state and an empty list of actions
+    fringe.push((problem.getStartState(), []))
+    
+    # Keep track of states we have already expanded to avoid loops
+    expanded = set()
+    
+    while not fringe.isEmpty():
+        # Pop the current state and the path taken to get there
+        current_state, path = fringe.pop()
+        
+        # If we reached the goal, return the path
+        if problem.isGoalState(current_state):
+            return path
+            
+        # If we haven't expanded this state yet
+        if current_state not in expanded:
+            expanded.add(current_state)
+            
+            # Get all successors: (next_state, action, stepCost)
+            for next_state, action, cost in problem.getSuccessors(current_state):
+                if next_state not in expanded:
+                    # Push the successor and the updated path onto the stack
+                    fringe.push((next_state, path + [action]))
+                    
+    return []
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
+    
+    # Initialize the fringe as a Queue (FIFO)
+    fringe = Queue()
+    # Push the starting state and an empty list of actions
+    fringe.push((problem.getStartState(), []))
+    
+    # Keep track of states we have already expanded to avoid loops
+    expanded = set()
+    
+    while not fringe.isEmpty():
+        # Pop the current state and the path taken to get there
+        current_state, path = fringe.pop()
+        
+        # If we reached the goal, return the path
+        if problem.isGoalState(current_state):
+            return path
+            
+        # If we haven't expanded this state yet
+        if current_state not in expanded:
+            expanded.add(current_state)
+            
+            # Get all successors: (next_state, action, stepCost)
+            for next_state, action, cost in problem.getSuccessors(current_state):
+                if next_state not in expanded:
+                    # Push the successor and the updated path onto the queue
+                    fringe.push((next_state, path + [action]))
+                    
+    return []
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
