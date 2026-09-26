@@ -143,8 +143,38 @@ def breadthFirstSearch(problem: SearchProblem):
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+    
+    # Initialize the fringe as a Priority Queue
+    fringe = PriorityQueue()
+    
+    # Push the starting state, empty path, and 0 initial cost
+    # Format: fringe.push((state, path, current_cost), priority)
+    fringe.push((problem.getStartState(), [], 0), 0)
+    
+    # Keep track of expanded states
+    expanded = set()
+    
+    while not fringe.isEmpty():
+        # Pop the state with the lowest cost
+        current_state, path, current_cost = fringe.pop()
+        
+        # If we reached the goal, return the path
+        if problem.isGoalState(current_state):
+            return path
+            
+        # If we haven't expanded this state yet
+        if current_state not in expanded:
+            expanded.add(current_state)
+            
+            # Get all successors: (next_state, action, stepCost)
+            for next_state, action, cost in problem.getSuccessors(current_state):
+                if next_state not in expanded:
+                    new_cost = current_cost + cost
+                    # The priority is just the new total cost (g)
+                    fringe.push((next_state, path + [action], new_cost), new_cost)
+                    
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -155,8 +185,44 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+    
+    # Initialize the fringe as a Priority Queue
+    fringe = PriorityQueue()
+    start_state = problem.getStartState()
+    
+    # Initial heuristic value
+    start_heuristic = heuristic(start_state, problem)
+    
+    # Push the starting state, empty path, and 0 initial cost
+    # Format: fringe.push((state, path, current_cost), priority = cost + heuristic)
+    fringe.push((start_state, [], 0), start_heuristic)
+    
+    # Keep track of expanded states
+    expanded = set()
+    
+    while not fringe.isEmpty():
+        # Pop the state with the lowest f(n) = g(n) + h(n)
+        current_state, path, current_cost = fringe.pop()
+        
+        # If we reached the goal, return the path
+        if problem.isGoalState(current_state):
+            return path
+            
+        # If we haven't expanded this state yet
+        if current_state not in expanded:
+            expanded.add(current_state)
+            
+            # Get all successors: (next_state, action, stepCost)
+            for next_state, action, cost in problem.getSuccessors(current_state):
+                if next_state not in expanded:
+                    new_cost = current_cost + cost
+                    # The priority is total cost (g) + heuristic (h)
+                    f_cost = new_cost + heuristic(next_state, problem)
+                    
+                    fringe.push((next_state, path + [action], new_cost), f_cost)
+                    
+    return []
 
 
 # Abbreviations
