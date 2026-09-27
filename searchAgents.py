@@ -495,8 +495,30 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    # Get the list of all remaining food coordinates
+    food_list = foodGrid.asList()
+    
+    # If no food is left, heuristic is 0
+    if not food_list:
+        return 0
+        
+    # Find the maximum maze distance between any two remaining food dots
+    max_food_dist = 0
+    for i in range(len(food_list)):
+        for j in range(i + 1, len(food_list)):
+            dist = mazeDistance(food_list[i], food_list[j], problem.startingGameState)
+            if dist > max_food_dist:
+                max_food_dist = dist
+                
+    # Find the minimum maze distance from pacman to any food dot
+    min_dist_to_food = float('inf')
+    for food in food_list:
+        dist = mazeDistance(position, food, problem.startingGameState)
+        if dist < min_dist_to_food:
+            min_dist_to_food = dist
+            
+    # Admissible and consistent heuristic
+    return min_dist_to_food + max_food_dist
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
